@@ -1,58 +1,79 @@
 require './game'
 
-game = Game.new
-puts """
-     
-  0 1 2 3 4 5 6 
-0|_|_|_|_|_|_|_|
-1|_|_|_|_|_|_|_|
-2|_|_|_|_|_|_|_|
-3|_|_|_|_|_|_|_|
-4|_|_|_|_|_|_|_|
-5|_|_|_|_|_|_|_|
-6|_|_|_|_|_|_|_|
-  """
-game.star
-puts 'ingrese las cordenas para ubicar su barco'
-print 'x: '
-x = gets.chomp.to_i
-print 'y: '
-y = gets.chomp.to_i
-puts 'Horientacion'
-puts 'A. Horizontal'
-puts 'B. Vertical'
-orientation = gets.chomp
-game.locate_ship_user(x, y, orientation)
 
-print 'Ubicando el barco de su oponente...'
-x = rand(4)
-y = rand(4)
-letters = %w{a b}
-i = letters.length
-orientation = letters[rand(i)]
-game.locate_ship_bot(x, y, orientation)
-print 'Listo'
-puts'------------------------------------------------------------------------------------------------'
+continue = true
 
-while game.cont_user <= 4 or game.cont_bot <= 4
-  puts 'ingrese las cordenas para atacar a su ponente'
+while continue
+  game = Game.new
+  game.board
+  puts 'Enter the coordinates to locate your boat'
   print 'x: '
-  i = gets.chomp.to_i
+  x = gets.chomp.to_i
   print 'y: '
-  j = gets.chomp.to_i
-  game.attacks_user(i, j)
-  
-  print 'Su oponente esta armando su estrategia!'
-  i = rand(7)
-  j = rand(7)
-  game.attacks_bot(i, j)
+  y = gets.chomp.to_i
+  puts 'Orientation'
+  puts 'A. Horizontal'
+  puts 'B. Vertical'
+  orientation = gets.chomp
+  result = game.locate_ship_player(x, y, orientation)
+  while result 
+    puts 'Enter the coordinates to locate your boat'
+    print 'x: '
+    x = gets.chomp.to_i
+    print 'y: '
+    y = gets.chomp.to_i
+    puts 'Orientacion'
+    puts 'A. Horizontal'
+    puts 'B. Vertical'
+    orientation = gets.chomp
+    game.locate_ship_player(x, y, orientation)
+    result = game.locate_ship_player(x, y, orientation)
+  end
+  puts "Locating your opponent's ship ..."
+  game.locate_ship_bot
+  print "Ready \n"
+  puts'-------------------------------------------------------------------------------'
 
-  game.list
+  while (game.hits_player < 4) && (game.hits_bot < 4)
+    puts 'Enter the coordinates to attack your opponent'
+    print 'x: '
+    i = gets.chomp.to_i
+    print 'y: '
+    j = gets.chomp.to_i
+    while game.check_coordinate_player?(i, j)
+      puts 'This attack is repeated'
+      puts 'Enter the coordinates to attack your opponent'
+      print 'x: '
+      i = gets.chomp.to_i
+      print 'y: '
+      j = gets.chomp.to_i
+      game.check_coordinate_player?(i, j)
+    end
+    result = game.attacks_player(i, j)
+    game.register_attack_player(i, j, result)
+
+    while game.check_coordinate_bot?(x, y)
+      puts 'This attack is repeated'
+      puts 'Your opponent is putting together his strategy!'
+      x = rand(7)
+      y = rand(7)
+    end 
+    result = game.attacks_bot(x, y)
+    game.register_attack_bot(x, y, result)
+    puts"#{game.board}   #{game.list_player}"
+  end
+
+  if game.hits_player == 0
+    puts 'WINNER'
+  else
+   puts 'YOU HAVE LOST'
+  end
+
+  puts 'Play again?y/n'
+  reply = gets.chomp
+  if reply == "n"
+    continue = false
+  elsif reply == "y"
+    continue = true
+  end
 end
-
-if game.cont_user == 4
-  puts 'GANADOR'
-else
-  puts 'HAS PERDIDO'
-end
-

@@ -1,117 +1,83 @@
 require './board'
+require './user'
+require './bot'
+require './player'
 
 class Game
-  attr_accessor :boards_user, :boards_bots, :cont_user, :cont_bot
-  
+  def board
+    puts """  
+      0 1 2 3 4 5 6 
+    0|_|_|_|_|_|_|_|
+    1|_|_|_|_|_|_|_|
+    2|_|_|_|_|_|_|_|
+    3|_|_|_|_|_|_|_|
+    4|_|_|_|_|_|_|_|
+    5|_|_|_|_|_|_|_|
+    6|_|_|_|_|_|_|_|
+    """
+  end
+
   def initialize
-    @boards_users = []
-    @boards_bots = []
-    @cont_user = 0
-    @cont_bot = 0
+    @player = Player.new
+    @player.create_boards_and_ship
+    @bot = Bot.new
+    @bot.create_boards_and_ship
   end
 
-  def star
-    i = 0
-    while i <= 2
-      board_user = Board.new
-      (0..6).each do |i|
-        (0..6).each do |j|
-          board_user.matrix[i][j] = 0
-        end
-      end
-      @boards_users << board_user
-      board_bot = Board.new
-      (0..6).each do |i|
-        (0..6).each do |j|
-          board_bot.matrix[i][j] = 0
-        end
-      end
-      @boards_bots << board_bot
-      i += 1
-    end
+  def locate_ship_player(x, y, orientation)
+    @player.locate_ship(x, y, orientation)
   end
 
-  def locate_ship_user(x,y,orientation)
-    board = @boards_users[0]
-    if orientation == "b"
-        if x <= 3
-          (0..3).each do |i|
-            board.matrix[x + i][y] = 1
-          end
-        else
-          puts 'En esta pocicion no se puede ubicar'
-        end
-    elsif orientation == "a"
-      if y <= 3
-        (0..3).each do |i|
-          board.matrix[x][y + i] = 1
-       end
-      else
-        puts 'En esta pocicion no se puede ubicar'
-      end
+  def locate_ship_bot
+    @bot.locate_ship
+  end
+
+  def attacks_player(i, j)
+    result = @bot.receive_attack?(i, j)
+    if result 
+      puts 'You hit him!'
     else
-      puts 'Incorrect option'
+      puts 'Water!'
     end
+    result
   end
 
-  def locate_ship_bot(x,y,orientation)
-    board = @boards_bots[0]
-    if orientation == "b"
-      (0..3).each do |i|
-        board.matrix[x + i][y] = 1
-      end
-    elsif orientation == "a"
-      (0..3).each do |i|
-        board.matrix[x][y + i] = 1
-      end
+  def check_coordinate_player?(i, j)
+    @bot.check_coordinate?(i, j)
+  end
+
+  def register_attack_player(i, j, result)
+    @player.register_attack(i, j, result)
+  end
+  
+  def attacks_bot(x, y)
+    result = @player.receive_attack?(x, y)
+    if result 
+      puts 'You hit him!'
     else
-      puts 'Incorrect option'
+      puts 'Water!'
     end
   end
-
-  def attacks_user(i, j)
-    board_ship = @boards_bots[0]
-    board_attacks = @boards_users[1]
-    if board_ship.matrix[i][j] == 1
-      board_attacks.matrix[i][j] = 2
-      @cont_user += 1
-      puts 'Le diste'
-    else
-      board_attacks.matrix[i][j] = 3
-      puts 'Agua'
-    end 
+  def check_coordinate_bot?(x, y)
+    @player.check_coordinate?(x, y)
   end
 
-  def attacks_bot(i, j)
-    board_ship = @boards_users[0]
-    board_attacks = @boards_bots[1]
-    if board_ship.matrix[i][j] == 1
-      board_attacks.matrix[i][j] = 2
-      @cont_bot += 1
-      puts 'Le diste'
-    else
-      board_attacks.matrix[i][j] = 3
-      puts 'Agua'
-    end 
+  def register_attack_bot(x, y, result)
+    @bot.register_attack(x, y, result)
   end
 
-
-  def list 
-    board_ship = @boards_users[0]
-    board_attacks = @boards_users[1]
-   puts 'Ubicacio de su barco'
-    (0..6).each do |i|
-      (0..6).each do |j|
-        print "#{board_ship.matrix[i][j]}  "
-      end
-      print "\n"
-    end
-   puts 'Sus ataques'
-    (0..6).each do |i|
-      (0..6).each do |j|
-        print "#{board_attacks.matrix[i][j]}  "
-      end
-      print "\n"
-    end
+  def hits_player
+    ships_player = @player.ships[0]
+    return ships_player.hits
   end
+
+  def hits_bot
+    ships_bot = @bot.ships[0]
+    return ships_bot.hits
+  end
+
+  def list_player
+    @player.list
+  end
+
 end
