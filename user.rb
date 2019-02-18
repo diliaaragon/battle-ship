@@ -19,7 +19,6 @@ class User
       board_ship.matrix[x][y] = 2
       ship =  @ships[0]
       ship.hits += 1
-      print board_ship.matrix
       return true
     else
       board_ship.matrix[x][y] = 3

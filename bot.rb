@@ -6,11 +6,11 @@ class Bot < User
     letters = %w{a b}
     orientation = letters[rand(2)]
     if orientation == 1
-      x = rand(4)
-      y = rand(7)
+      x = rand(3)
+      y = rand(6)
     else
-      x = rand(7)
-      y = rand(4)
+      x = rand(6)
+      y = rand(3)
     end
     puts "#{x}, #{y}"
     case orientation

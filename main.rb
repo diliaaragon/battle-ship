@@ -1,8 +1,6 @@
 require './game'
 
-
 continue = true
-
 while continue
   game = Game.new
   game.board
@@ -52,14 +50,34 @@ while continue
     result = game.attacks_player(i, j)
     game.register_attack_player(i, j, result)
 
-    while game.check_coordinate_bot?(x, y)
-      puts 'This attack is repeated'
+   if game.hits_player == 0
       puts 'Your opponent is putting together his strategy!'
       x = rand(7)
       y = rand(7)
-    end 
-    result = game.attacks_bot(x, y)
-    game.register_attack_bot(x, y, result)
+      
+      while game.check_coordinate_bot?(x, y)
+        puts 'This attack is repeated'
+        puts 'Your opponent is putting together his strategy!'
+        
+      end 
+      result = game.attacks_bot(x, y)
+      game.register_attack_bot(x, y, result)
+      if result = true
+        f = x
+        c = y
+      end
+    else 
+      puts 'Your opponent is putting together his strategy!'
+      orientation_bot = rand(2)
+      if orienation == 1
+        f += 1
+      else 
+        c += 1
+      end
+      result = game.attacks_bot(f, c)
+      game.register_attack_bot(f, c, result)
+    end
+
     puts"#{game.board}   #{game.list_player}"
   end
 
