@@ -25,7 +25,7 @@ class Game
   end
 
   def locate_ship_player(x, y, orientation)
-    @player.locate_ship(x, y, orientation)
+    @player.locate_ship?(x, y, orientation)
   end
 
   def locate_ship_bot
@@ -43,27 +43,38 @@ class Game
   end
 
   def check_coordinate_player?(i, j)
-    @bot.check_coordinate?(i, j)
+    @player.check_coordinate?(i, j)
   end
 
   def register_attack_player(i, j, result)
     @player.register_attack(i, j, result)
   end
   
-  def attacks_bot(x, y)
+  def attacks_bot
+    x = @bot.attacks[0]
+    y = @bot.attacks[1]
     result = @player.receive_attack?(x, y)
+    @bot.register_attack(x, y, result)
     if result 
+      turno = []
+      turno << x
+      turno << y
+      turno << @bot.turn
+      @bot.positions << turno
       puts 'You hit him!'
-    else
+    elsif !result && @bot.positions.empty? 
+      puts 'Water!'
+    elsif !result && @bot.positions.empty? == false 
+      @bot.turn += 1
       puts 'Water!'
     end
   end
-  def check_coordinate_bot?(x, y)
-    @player.check_coordinate?(x, y)
-  end
 
-  def register_attack_bot(x, y, result)
-    @bot.register_attack(x, y, result)
+  def validate_coordinates?(i, j)
+    if i >= 7 || j >= 7
+      return false
+    end
+    return true
   end
 
   def hits_player

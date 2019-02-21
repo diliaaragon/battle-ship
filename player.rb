@@ -2,9 +2,10 @@ require './user'
 require './board'
 
 class Player < User
-  def locate_ship(x,y,orientation)
+
+  def locate_ship?(x, y, orientation)
     board = @boards[0]
-    switch = false
+    switch = true
     if orientation == "b"
         if x <= 3
           (0..3).each do |i|
@@ -12,7 +13,7 @@ class Player < User
           end
         else
           puts 'In this position it can not be located.'
-          switch = true
+          switch = false
         end
     elsif orientation == "a"
       if y <= 3
@@ -21,10 +22,11 @@ class Player < User
        end
       else
         puts 'In this position it can not be located.'
-        swich = true
+        switch = false
       end
     else
       puts 'Incorrect option'
+      switch = false
     end
    return switch
   end

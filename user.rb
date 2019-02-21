@@ -1,15 +1,16 @@
 require './board'
 require './ship'
+require 'pry'
 
 class User
-  attr_accessor :boards, :ships
+  attr_accessor :boards, :ships, :turn
   def initialize
     @boards = []
     @ships = []
   end
 
   def create_boards_and_ship
-    (0..1).each { @boards << Board.new(7)}
+    (0..1).each { @boards << Board.new(7) }
     @ships << Ship.new
   end
 
@@ -36,7 +37,7 @@ class User
   end
 
   def check_coordinate?(x, y)
-    board_ship = @boards[0]
+    board_ship = @boards[1]
     if board_ship.matrix[x][y] == 2 || board_ship.matrix[x][y]== 3 
       return true
     else
